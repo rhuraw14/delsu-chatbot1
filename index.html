@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ Chatbot - Rule-Based AI</title>
+    <style>
+        /* ============================================
+           CSS STYLES - Controls how the chatbot looks
+           ============================================ */
+        
+        /* Reset default browser styles */
+        * {
+            margin: 1;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Main page styling with gradient background */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #e3ecf2;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+        }
+
+        /* Main chat container */
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;
+            background: white;
+            border-radius: 0px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header section at the top */
+        .chat-header {
+            background:#667eea;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            font-size: 14px;
+            opacity: 1;
+        }
+
+        /* Control buttons (Debug and Reset) */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 6px 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(246, 236, 236, 0.692);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Messages display area (scrollable) */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #44ace42f;
+        }
+
+        /* Individual message bubble */
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        /* Animation for new messages appearing */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* User messages align to the right */
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        /* Message bubble styling */
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            white-space: pre-line;
+        }
+
+        /* Bot messages (white background) */
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* User messages (blue background) */
+        .message.user .message-content {
+            background: #667eea ;
+            color: white;
+        }
+
+        /* Debug information display */
+        .debug-info {
+            font-size: 11px;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+        }
+
+        /* Example questions section */
+        .example-questions {
+            padding: 10px 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        /* Individual example question button */
+        .example-btn {
+            padding: 6px 12px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Input area at the bottom */
+        .chat-input {
+            padding: 15px;
+            background: white;
+            border-top: 2px solid #5a83ea94;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Text input field */
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #5a83ea;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input input:focus {
+            border-color: #667eea;
+        }
+
+        /* Send button */
+        .send-btn {
+            padding: 12px 24px;
+            background: #5a83ea ;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Information bar at the very bottom */
+        .info-bar {
+            padding: 10px 20px;
+            background: #fff3cd;
+            border-top: 1px solid #ffc107;
+            font-size: 13px;
+            color: #856404;
+            text-align: center;
+        }
+
+        /* ============================================
+           RESPONSIVE STYLES - MOBILE ADAPTATIONS
+           ============================================ */
+        
+        /* ADDED: Media query for mobile devices (screens smaller than 768px) */
+        @media (max-width: 768px) {
+            /* Remove padding on body for full-width mobile view */
+            body {
+                padding: 0;
+            }
+
+            /* Make chat container take full screen on mobile */
+            .chat-container {
+                max-width: 100%;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            /* Reduce header padding on mobile */
+            .chat-header {
+                padding: 15px 10px;
+            }
+
+            /* Smaller heading on mobile */
+            .chat-header h1 {
+                font-size: 20px;
+            }
+
+            /* Smaller subheading on mobile */
+            .chat-header p {
+                font-size: 12px;
+            }
+
+            /* Make control buttons smaller on mobile */
+            .btn {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+
+            /* Reduce message area padding on mobile */
+            .chat-messages {
+                padding: 10px;
+            }
+
+            /* Allow messages to take more width on mobile */
+            .message-content {
+                max-width: 85%;
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            /* Reduce example questions padding on mobile */
+            .example-questions {
+                padding: 8px 10px;
+                gap: 5px;
+            }
+
+            /* Make example buttons smaller and wrap better on mobile */
+            .example-btn {
+                padding: 5px 10px;
+                font-size: 11px;
+                flex: 1 1 auto;
+            }
+
+            /* Reduce input area padding on mobile */
+            .chat-input {
+                padding: 10px;
+                gap: 8px;
+            }
+
+            /* Smaller input text on mobile */
+            .chat-input input {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+
+            /* Smaller send button on mobile */
+            .send-btn {
+                padding: 10px 18px;
+                font-size: 14px;
+            }
+
+            /* Smaller info bar text on mobile */
+            .info-bar {
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+
+            /* Make debug info smaller on mobile */
+            .debug-info {
+                font-size: 10px;
+            }
+        }
+
+        /* ADDED: Media query for very small mobile devices (screens smaller than 480px) */
+        @media (max-width: 480px) {
+            /* Even smaller heading for very small screens */
+            .chat-header h1 {
+                font-size: 18px;
+            }
+
+            /* Stack control buttons vertically on very small screens if needed */
+            .controls {
+                gap: 5px;
+            }
+
+            /* Further reduce button size */
+            .btn {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            /* Messages take up even more width on very small screens */
+            .message-content {
+                max-width: 90%;
+                font-size: 13px;
+            }
+
+            /* Make example buttons full width on very small screens */
+            .example-btn {
+                flex: 1 1 100%;
+                text-align: center;
+            }
+
+            /* Reduce send button text on very small screens */
+            .send-btn {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+        }
+
+        /* ADDED: Media query for tablets (between 768px and 1024px) */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            /* Slightly reduce container width on tablets */
+            .chat-container {
+                max-width: 700px;
+            }
+
+            /* Adjust message width for tablet screens */
+            .message-content {
+                max-width: 75%;
+            }
+        }
+
+        /* ADDED: Media query for landscape orientation on mobile */
+        @media (max-height: 600px) and (orientation: landscape) {
+            /* Reduce header size in landscape mode */
+            .chat-header {
+                padding: 10px;
+            }
+
+            .chat-header h1 {
+                font-size: 18px;
+                margin-bottom: 2px;
+            }
+
+            .chat-header p {
+                font-size: 11px;
+            }
+
+            /* Hide or minimize info bar in landscape */
+            .info-bar {
+                padding: 5px 10px;
+                font-size: 10px;
+            }
+
+            /* Reduce message padding in landscape */
+            .chat-messages {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ============================================
+         HTML STRUCTURE - The chatbot interface
+         ============================================ -->
+    
+    <!-- Main container for the entire chatbot -->
+    <div class="chat-container">
+        <!-- Header section with title and control buttons -->
+        <div class="chat-header">
+            <h1>📚 DELSU FAQ Chatbot</h1>
+            <p>Ask Any Question you Need Answers to</p>
+            <div class="controls">
+                <!-- Button to show/hide debug information -->
+                <button class="btn" onclick="toggleDebug()">Toggle Debug</button>
+                <!-- Button to clear chat and start over -->
+                <button class="btn" onclick="resetChat()">Reset Chat</button>
+            </div>
+        </div>
+
+        <!-- Messages display area (where conversation appears) -->
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <!-- Pre-made example questions users can click -->
+        <div class="example-questions">
+            <button class="example-btn" onclick="sendExample('What courses do you offer?')">What courses do you offer?</button>
+            <button class="example-btn" onclick="sendExample('Are admissions open?')">Are you offering admissions?</button>
+            <button class="example-btn" onclick="sendExample('How do I apply?')">How to apply?</button>
+            <button class="example-btn" onclick="sendExample('Do you have scholarships?')">Scholarships?</button>
+        </div>
+
+        <!-- Input area where users type their questions -->
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your question here..." onkeypress="handleKeyPress(event)">
+            <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+
+        <!-- Helpful tip at the bottom -->
+        <div class="info-bar">
+            💡 Try rephrasing questions to see how pattern matching works! Ask variations to test the system's limitations.
+        </div>
+    </div>
+
+    <script>
+        /* ============================================
+           JAVASCRIPT CODE - The AI brain of the chatbot
+           ============================================ */
+
+        // -------------------- GLOBAL STATE --------------------
+        // These variables store the chatbot's current state
+        
+        let debugMode = false;  // Controls whether to show debug info
+        let messages = [];      // Array to store all conversation messages
+
+        // -------------------- KNOWLEDGE BASE --------------------
+        // This is the "brain" of the chatbot - all the rules and responses
+        // Each topic has patterns (what to look for) and a response (what to say)
+        
+        const knowledgeBase = {
+            // RULE 1: Course Information
+            courses: {
+                // Patterns are regular expressions (regex) that match user questions
+                patterns: [
+                    /what (courses|classes|subjects) (do you|are) (offer|available|teach)/i,
+                    /tell me about (the )?courses/i,
+                    /what can i study/i,
+                    /course (list|offerings)/i
+                ],
+                // Response given when any pattern matches
+                response: "We offer courses in Computer Science, Mathematics, Physics, Chemistry, Biology, English Literature, History, and Business Administration. Each course has beginner, intermediate, and advanced levels."
+            },
+            
+            // RULE 2: Course Fees
+            courseFees: {
+                patterns: [
+                    /how much (does|do|is|are) (the )?(course|class|tuition|school) (cost|fee|fees)/i,
+                    /what (is|are) the (course|tuition) (fee|cost|price|fees)/i,
+                    /price of courses/i
+                ],
+                response: "Course fees vary by program: Undergraduate courses are N200,000 per session, Graduate courses are N350,000 per semester. Financial aid is available for eligible students."
+            },
+
+            // RULE 3: Library Hours
+            libraryHours: {
+                patterns: [
+                    /(what|when) (are|is) (the )?library (hours|timings|open)/i,
+                    /when (does|is) the library (open|close)/i,
+                    /library schedule/i
+                ],
+                response: "The library is open Monday-Friday: 8:00 AM - 10:00 PM, Saturday-Sunday: 10:00 AM - 6:00 PM. During exam weeks, we extend hours until midnight."
+            },
+
+            // RULE 4: Borrowing Books
+            libraryBooks: {
+                patterns: [
+                    /how many books can i (borrow|check out|take)/i,
+                    /(what is|what's) the (book )?borrowing limit/i,
+                    /how long can i (keep|borrow) (a )?book/i
+                ],
+                response: "Students can borrow up to 5 books at a time for 2 weeks. Books can be renewed twice if no one else has requested them. Late fees are N500 per day."
+            },
+
+            // RULE 5: Library Card
+            libraryCard: {
+                patterns: [
+                    /how (do i|to) get (a )?library card/i,
+                    /library card (application|process)/i,
+                    /need a library card/i
+                ],
+                response: "To get a library card, visit the library front desk with your stamped school fees breakdown. Cards are issued free of charge and are valid for your entire enrollment period."
+            },
+
+            // RULE 6: Admission Requirements
+            admission: {
+                patterns: [
+                    /how (do i|to) (apply|enroll|join|register)/i,
+                    /admission (process|requirements|procedure)/i,
+                    /what (are|is) the (admission|enrollment) requirements/i
+                ],
+                response: "Admission requirements include a completed application form, WAEC/NECO Results, JAMB Admission Letter, and POST-UTME Results."
+            },
+
+            // RULE 7: Admission Status
+            admissionStatus: {
+                patterns: [
+                    /are (you) (offering|enrolling) admissions/i,
+                    /has (admissions|enrollment) (started|begun|ended)/i,
+                    /admission deadline/i,
+                    /are admissions open/i
+                ],
+                response: "Admissions into DELSU begins from September to October every year. You must have passed through POST-UTME to be considered for admissions."
+            },
+
+            // RULE 8: Contact Information
+            contact: {
+                patterns: [
+                    /(what is|what's) (the )?(school|college|university) (contact|phone|email|address)/i,
+                    /how (can|do) i contact (you|the school)/i,
+                    /contact (information|details)/i
+                ],
+                response: "You can reach us at: Phone: (234) 7019338740, Email: delsuinfo@school.edu, Address: PMB 1, Abraka, Delta State, Nigeria. Office hours are 9 AM - 5 PM, Monday-Friday."
+            },
+
+            // RULE 9: Scholarships
+            scholarship: {
+                patterns: [
+                    /(are there|do you have|tell me about) scholarship/i,
+                    /financial aid/i,
+                    /how to get (a )?scholarship/i
+                ],
+                response: "We offer merit-based and need-based scholarships. Merit scholarships range from N100,000-N500,000 based on GPA and test scores."
+            },
+
+            // RULE 10: Academic Calendar
+            calendar: {
+                patterns: [
+                    /when (does|is) (the )?(semester|term|school year|academic year) (start|begin)/i,
+                    /(academic|school) calendar/i,
+                    /important dates/i
+                ],
+                response: "First Semester Begins from November - March, Second Semester Begins from April to July. Registration opens 2 months before each semester begins."
+            }
+        };
+
+        // -------------------- GREETING RESPONSES --------------------
+        // Special rules for when users say hello
+        
+        const greetings = {
+            // Patterns that match greetings
+            patterns: [
+                /^(hi|hello|hey|greetings|good (morning|afternoon|evening))$/i,
+                /^(what's up|sup|yo)$/i
+            ],
+            // Multiple possible responses (chosen randomly)
+            responses: [
+                "Hello! How can I help you today?",
+                "Hi there! What would you like to know?",
+                "Hey! Ask me anything about courses, library, or school info!"
+            ]
+        };
+
+        // -------------------- FAREWELL RESPONSES --------------------
+        // Special rules for when users say goodbye
+        
+        const farewells = {
+            patterns: [
+                /^(bye|goodbye|see you|thanks|thank you|that's all)$/i,
+                /^(ok|okay) (bye|thanks)$/i
+            ],
+            responses: [
+                "Goodbye! Feel free to come back if you have more questions!",
+                "Happy to help! Have a great day!",
+                "Take care! Good luck with your studies!"
+            ]
+        };
+
+        // -------------------- KEYWORD FALLBACK --------------------
+        // If no pattern matches, try simple keyword matching
+        // Maps keywords to knowledge base topics
+        
+        const keywords = {
+            course: 'courses',           // If message contains "course", use courses rule
+            library: 'libraryHours',     // If message contains "library", use libraryHours rule
+            admission: 'admission',      // If message contains "admission", use admission rule
+            admissionStatus: 'offering',
+            scholarship: 'scholarship',  // If message contains "scholarship", use scholarship rule
+            contact: 'contact'           // If message contains "contact", use contact rule
+        };
+
+        // -------------------- PATTERN MATCHING FUNCTION --------------------
+        // This is the CORE AI LOGIC - the "IF-THEN" rule system
+        // INPUT: User's question (string)
+        // OUTPUT: Object with {response, rule, confidence}
+        
+        function matchPattern(userInput) {
+            // Convert input to lowercase for case-insensitive matching
+            const input = userInput.trim().toLowerCase();
+
+            // STEP 1: Check if it's a greeting
+            // Loop through all greeting patterns
+            for (let pattern of greetings.patterns) {
+                // .test() checks if the pattern matches the input
+                if (pattern.test(input)) {
+                    // Pick a random greeting response
+                    const response = greetings.responses[Math.floor(Math.random() * greetings.responses.length)];
+                    // Return with high confidence
+                    return { response, rule: 'greeting', confidence: 'high' };
+                }
+            }
+
+            // STEP 2: Check if it's a farewell
+            for (let pattern of farewells.patterns) {
+                if (pattern.test(input)) {
+                    const response = farewells.responses[Math.floor(Math.random() * farewells.responses.length)];
+                    return { response, rule: 'farewell', confidence: 'high' };
+                }
+            }
+
+            // STEP 3: Check knowledge base (main rules)
+            // Object.entries() converts the knowledge base into [key, value] pairs
+            for (let [key, value] of Object.entries(knowledgeBase)) {
+                // Check each pattern in this topic
+                for (let pattern of value.patterns) {
+                    // IF pattern matches THEN return this response
+                    if (pattern.test(input)) {
+                        return { response: value.response, rule: key, confidence: 'high' };
+                    }
+                }
+            }
+
+            // STEP 4: Keyword fallback (lower confidence)
+            // If no exact pattern matched, try simple keyword matching
+            for (let [keyword, rule] of Object.entries(keywords)) {
+                // Check if the keyword appears anywhere in the input
+                if (input.includes(keyword)) {
+                    if (knowledgeBase[rule]) {
+                        return { response: knowledgeBase[rule].response, rule: rule, confidence: 'medium' };
+                    }
+                }
+            }
+
+            // STEP 5: Default fallback - nothing matched
+            // This is what happens when the bot doesn't understand
+            return {
+                response: "I'm sorry, I don't understand that question. I can help you with:\n• Course information\n• Library rules and hours\n• Admission requirements\n• Scholarships and financial aid\n• Contact information\n• Academic calendar",
+                rule: 'fallback',
+                confidence: 'none'
+            };
+        }
+
+        // -------------------- MESSAGE MANAGEMENT --------------------
+        
+        /**
+         * Add a new message to the conversation
+         * @param {string} text - The message text
+         * @param {string} sender - Either 'user' or 'bot'
+         * @param {string} rule - Which rule was triggered (optional)
+         * @param {string} confidence - Confidence level (optional)
+         */
+        function addMessage(text, sender, rule = null, confidence = null) {
+            // Create a message object
+            const message = { text, sender, rule, confidence };
+            // Add it to the messages array
+            messages.push(message);
+            // Update the display
+            renderMessages();
+        }
+
+        /**
+         * Display all messages in the chat window
+         * This function rebuilds the entire message display
+         */
+        function renderMessages() {
+            // Get the messages container element
+            const container = document.getElementById('chatMessages');
+            // Clear all existing messages
+            container.innerHTML = '';
+
+            // Loop through each message and create HTML elements
+            messages.forEach(msg => {
+                // Create outer div for the message
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.sender}`;  // 'message user' or 'message bot'
+
+                // Create inner div for the message content
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.textContent = msg.text;
+
+                // If debug mode is on AND this is a bot message, show debug info
+                if (debugMode && msg.sender === 'bot' && msg.rule) {
+                    const debugDiv = document.createElement('div');
+                    debugDiv.className = 'debug-info';
+                    debugDiv.textContent = `Rule: ${msg.rule} | Confidence: ${msg.confidence}`;
+                    contentDiv.appendChild(debugDiv);
+                }
+
+                // Add content to message, and message to container
+                messageDiv.appendChild(contentDiv);
+                container.appendChild(messageDiv);
+            });
+
+            // Auto-scroll to the bottom to show newest message
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // -------------------- USER INTERACTION FUNCTIONS --------------------
+        
+        /**
+         * Send the user's message and get bot response
+         * This is called when user clicks "Send" button
+         */
+        function sendMessage() {
+            // Get the input field element
+            const input = document.getElementById('userInput');
+            // Get the text and remove whitespace
+            const text = input.value.trim();
+
+            // Don't send empty messages
+            if (!text) return;
+
+            // Add user's message to the chat
+            addMessage(text, 'user');
+            // Clear the input field
+            input.value = '';
+
+            // Use the pattern matching function to get a response
+            const result = matchPattern(text);
+            
+            // Add bot's response after a short delay (makes it feel more natural)
+            setTimeout(() => {
+                addMessage(result.response, 'bot', result.rule, result.confidence);
+            }, 300);  // 300 milliseconds = 0.3 seconds
+        }
+
+        /**
+         * Fill the input with an example question and send it
+         * This is called when user clicks an example button
+         * @param {string} text - The example question
+         */
+        function sendExample(text) {
+            // Put the example text in the input field
+            document.getElementById('userInput').value = text;
+            // Automatically send it
+            sendMessage();
+        }
+
+        /**
+         * Handle Enter key press in the input field
+         * @param {Event} event - The keyboard event
+         */
+        function handleKeyPress(event) {
+            // If the key pressed was Enter
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        /**
+         * Toggle debug mode on/off
+         * Debug mode shows which rules matched and confidence levels
+         */
+        function toggleDebug() {
+            // Flip the boolean value
+            debugMode = !debugMode;
+            // Re-render messages to show/hide debug info
+            renderMessages();
+        }
+
+        /**
+         * Clear all messages and start fresh
+         */
+        function resetChat() {
+            // Empty the messages array
+            messages = [];
+            // Add the initial greeting message
+            addMessage("Welcome to DELSU Portal. Here you can ask anything about your courses, admission, or general school information!", 'bot', 'greeting', 'high');
+        }
+
+        // -------------------- INITIALIZATION --------------------
+        // This runs when the page first loads
+        
+        // Start the chat with a greeting message
+        resetChat();
+    </script>
+</body>
+</html>
