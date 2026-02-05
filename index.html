@@ -500,7 +500,20 @@
                 response: "To get a library card, visit the library front desk with your stamped school fees breakdown. Cards are issued free of charge and are valid for your entire enrollment period."
             },
 
-            // RULE 6: Admission Requirements
+            // RULE 6: How to Apply for Scholarships
+            // MOVED UP: This must be checked BEFORE general admission to avoid false matches
+            scholarshipApplication: {
+                patterns: [
+                    /how (do i|to|can i) apply (for|to) (a )?scholarship/i,
+                    /scholarship application (process|procedure|steps)/i,
+                    /apply (for )?scholarship/i,
+                    /steps to get scholarship/i
+                ],
+                response: "To apply for scholarships:\n1. Maintain a minimum GPA of 3.5 for merit-based scholarships\n2. Submit your application through the student portal\n3. Provide proof of financial need (for need-based scholarships)\n4. Include 2 recommendation letters from faculty members\n5. Write a 500-word personal statement\n6. Submit all documents before the deadline (usually end of August)\n7. Interviews are conducted in September for shortlisted candidates."
+            },
+
+            // RULE 7: Admission Requirements
+            // MOVED DOWN: Now checked after scholarship application
             admission: {
                 patterns: [
                     /how (do i|to) (apply|enroll|join|register)/i,
@@ -510,7 +523,7 @@
                 response: "Admission requirements include a completed application form, WAEC/NECO Results, JAMB Admission Letter, and POST-UTME Results."
             },
 
-            // RULE 7: Admission Status
+            // RULE 8: Admission Status
             admissionStatus: {
                 patterns: [
                     /are (you) (offering|enrolling) admissions/i,
@@ -521,7 +534,7 @@
                 response: "Admissions into DELSU begins from September to October every year. You must have passed through POST-UTME to be considered for admissions."
             },
 
-            // RULE 8: Contact Information
+            // RULE 9: Contact Information
             contact: {
                 patterns: [
                     /(what is|what's) (the )?(school|college|university) (contact|phone|email|address)/i,
@@ -531,7 +544,7 @@
                 response: "You can reach us at: Phone: (234) 7019338740, Email: delsuinfo@school.edu, Address: PMB 1, Abraka, Delta State, Nigeria. Office hours are 9 AM - 5 PM, Monday-Friday."
             },
 
-            // RULE 9: Scholarships
+            // RULE 10: Scholarships (General Info)
             scholarship: {
                 patterns: [
                     /(are there|do you have|tell me about) scholarship/i,
@@ -541,7 +554,7 @@
                 response: "We offer merit-based and need-based scholarships. Merit scholarships range from N100,000-N500,000 based on GPA and test scores."
             },
 
-            // RULE 10: Academic Calendar
+            // RULE 11: Academic Calendar
             calendar: {
                 patterns: [
                     /when (does|is) (the )?(semester|term|school year|academic year) (start|begin)/i,
@@ -552,17 +565,6 @@
             },
 
             // ========== NEW FAQ TOPICS ADDED BELOW ==========
-
-            // RULE 11: How to Apply for Scholarships
-            scholarshipApplication: {
-                patterns: [
-                    /how (do i|to|can i) apply (for|to) (a )?scholarship/i,
-                    /scholarship application (process|procedure|steps)/i,
-                    /apply (for )?scholarship/i,
-                    /steps to get scholarship/i
-                ],
-                response: "To apply for scholarships:\n1. Maintain a minimum GPA of 3.5 for merit-based scholarships\n2. Submit your application through the student portal\n3. Provide proof of financial need (for need-based scholarships)\n4. Include 2 recommendation letters from faculty members\n5. Write a 500-word personal statement\n6. Submit all documents before the deadline (usually end of August)\n7. Interviews are conducted in September for shortlisted candidates."
-            },
 
             // RULE 12: Years Needed for Various Courses
             courseDuration: {
@@ -588,15 +590,19 @@
             },
 
             // RULE 14: Courses Under Various Faculties
+            // FIXED: Added more patterns to catch faculty-related questions
             facultyCourses: {
                 patterns: [
-                    /what courses (are )?(in|under) (the )?(faculty|department) of/i,
+                    /what courses (are )?(in|under) (the )?(faculty|department)/i,
                     /(list|tell me|show me) courses in (the )?faculty/i,
                     /faculties and (their )?courses/i,
                     /courses (offered|available) in (the )?faculty/i,
-                    /what (can|courses) (i study|are offered) in (the )?faculty/i
+                    /what (can|courses) (i study|are offered) in (the )?faculty/i,
+                    /courses (in|under|for|at) (the )?(faculty|department) of/i,
+                    /(faculty|department) of .* courses/i,
+                    /what .* in faculty/i
                 ],
-                response: "Courses by Faculty:\n\n📚 Faculty of Science:\n• Mathematics, Physics, Chemistry, Biology, Statistics\n\n🏛️ Faculty of Arts:\n• English, History, Philosophy, Languages, Theatre Arts\n\n💼 Faculty of Social Sciences:\n• Economics, Political Science, Sociology, Psychology, Mass Communication\n\n⚖️ Faculty of Law:\n• Common Law, Civil Law, International Law\n\n🏥 Faculty of Medicine:\n• Medicine & Surgery, Nursing, Anatomy, Physiology\n\n🔧 Faculty of Engineering:\n• Civil, Mechanical, Electrical, Chemical Engineering\n\n📊 Faculty of Management Sciences:\n• Accounting, Business Administration, Banking & Finance\n\n Faculty of Computing:\n• Computer Science, Cybersecurity, Data Science, Artificial Intelligence, Software Engineering"
+                response: "Courses by Faculty:\n\n📚 Faculty of Science:\n• Mathematics, Physics, Chemistry, Biology, Statistics\n\n🏛️ Faculty of Arts:\n• English, History, Philosophy, Languages, Theatre Arts\n\n💼 Faculty of Social Sciences:\n• Economics, Political Science, Sociology, Psychology, Mass Communication\n\n⚖️ Faculty of Law:\n• Common Law, Civil Law, International Law\n\n🏥 Faculty of Medicine:\n• Medicine & Surgery, Nursing, Anatomy, Physiology\n\n🔧 Faculty of Engineering:\n• Civil, Mechanical, Electrical, Chemical Engineering\n\n📊 Faculty of Management Sciences:\n• Accounting, Business Administration, Banking & Finance\n\n💻 Faculty of Computing:\n• Computer Science, Cybersecurity, Data Science, Artificial Intelligence, Software Engineering"
             },
 
             // RULE 15: Current Vice Chancellor
@@ -644,20 +650,28 @@
         };
 
         // -------------------- KEYWORD FALLBACK --------------------
+        // FIXED: Reordered keywords - more specific ones FIRST to prevent false matches
         // If no pattern matches, try simple keyword matching
         // Maps keywords to knowledge base topics
+        // IMPORTANT: More specific keywords should be checked FIRST
         
         const keywords = {
-            course: 'courses',           // If message contains "course", use courses rule
-            library: 'libraryHours',     // If message contains "library", use libraryHours rule
-            admission: 'admission',      // If message contains "admission", use admission rule
-            admissionStatus: 'offering',
-            scholarship: 'scholarship',  // If message contains "scholarship", use scholarship rule
-            contact: 'contact',          // If message contains "contact", use contact rule
-            // NEW KEYWORDS ADDED
-            duration: 'courseDuration',  // If message contains "duration", use courseDuration rule
-            faculty: 'facultyCourses',   // If message contains "faculty", use facultyCourses rule
-            chancellor: 'viceChancellor' // If message contains "chancellor", use viceChancellor rule
+            // SPECIFIC KEYWORDS FIRST (to avoid being overridden by general ones)
+            'apply for scholarship': 'scholarshipApplication', // Most specific
+            'vice chancellor': 'viceChancellor',
+            'faculty': 'facultyCourses',
+            'duration': 'courseDuration',
+            'how long': 'courseDuration',
+            'beginner': 'levelDuration',
+            'intermediate': 'levelDuration',
+            'advanced': 'levelDuration',
+            
+            // GENERAL KEYWORDS LAST
+            'scholarship': 'scholarship',
+            'library': 'libraryHours',
+            'admission': 'admission',
+            'contact': 'contact',
+            'course': 'courses'  // Most general - checked last
         };
 
         // -------------------- PATTERN MATCHING FUNCTION --------------------
@@ -702,8 +716,11 @@
             }
 
             // STEP 4: Keyword fallback (lower confidence)
-            // If no exact pattern matched, try simple keyword matching
-            for (let [keyword, rule] of Object.entries(keywords)) {
+            // FIXED: Check longer, more specific phrases FIRST to avoid false matches
+            // Sort keywords by length (longest first) to prioritize specific matches
+            const sortedKeywords = Object.entries(keywords).sort((a, b) => b[0].length - a[0].length);
+            
+            for (let [keyword, rule] of sortedKeywords) {
                 // Check if the keyword appears anywhere in the input
                 if (input.includes(keyword)) {
                     if (knowledgeBase[rule]) {
