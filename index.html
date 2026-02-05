@@ -412,10 +412,11 @@
 
         <!-- Pre-made example questions users can click -->
         <div class="example-questions">
-            <button class="example-btn" onclick="sendExample('What courses do you offer?')">What courses do you offer?</button>
-            <button class="example-btn" onclick="sendExample('Are admissions open?')">Are you offering admissions?</button>
-            <button class="example-btn" onclick="sendExample('How do I apply?')">How to apply?</button>
-            <button class="example-btn" onclick="sendExample('Do you have scholarships?')">Scholarships?</button>
+            <button class="example-btn" onclick="sendExample('What courses do you offer?')">Courses</button>
+            <button class="example-btn" onclick="sendExample('How do I apply for scholarship?')">Apply for scholarship</button>
+            <button class="example-btn" onclick="sendExample('How long are the courses?')">Course duration</button>
+            <button class="example-btn" onclick="sendExample('Who is the vice chancellor?')">Vice Chancellor</button>
+            <button class="example-btn" onclick="sendExample('Courses in faculty of science?')">Faculty courses</button>
         </div>
 
         <!-- Input area where users type their questions -->
@@ -548,6 +549,65 @@
                     /important dates/i
                 ],
                 response: "First Semester Begins from November - March, Second Semester Begins from April to July. Registration opens 2 months before each semester begins."
+            },
+
+            // ========== NEW FAQ TOPICS ADDED BELOW ==========
+
+            // RULE 11: How to Apply for Scholarships
+            scholarshipApplication: {
+                patterns: [
+                    /how (do i|to|can i) apply (for|to) (a )?scholarship/i,
+                    /scholarship application (process|procedure|steps)/i,
+                    /apply (for )?scholarship/i,
+                    /steps to get scholarship/i
+                ],
+                response: "To apply for scholarships:\n1. Maintain a minimum GPA of 3.5 for merit-based scholarships\n2. Submit your application through the student portal\n3. Provide proof of financial need (for need-based scholarships)\n4. Include 2 recommendation letters from faculty members\n5. Write a 500-word personal statement\n6. Submit all documents before the deadline (usually end of August)\n7. Interviews are conducted in September for shortlisted candidates."
+            },
+
+            // RULE 12: Years Needed for Various Courses
+            courseDuration: {
+                patterns: [
+                    /how (many|long) years (for|to complete|does it take)/i,
+                    /duration of (the )?course/i,
+                    /how long (is|does) (the )?(course|program) (take|last)/i,
+                    /years (needed|required) for course/i,
+                    /(course|program) length/i
+                ],
+                response: "Course Duration:\n• Undergraduate (B.Sc, B.A, B.Ed): 4 years\n• Medicine (MBBS): 6 years\n• Law (LLB): 5 years\n• Engineering: 5 years\n• Pharmacy: 5 years\n• Masters Programs (M.Sc, M.A): 2 years\n• PhD Programs: 3-5 years\n\nNote: Duration may vary for part-time and direct entry students."
+            },
+
+            // RULE 13: Level Duration (Beginner, Intermediate, Advanced)
+            levelDuration: {
+                patterns: [
+                    /how long (is|does|are) (the )?(beginner|intermediate|advanced) (level|course)/i,
+                    /duration of (beginner|intermediate|advanced)/i,
+                    /(beginner|intermediate|advanced) level duration/i,
+                    /how many (weeks|months) (for|is) each level/i
+                ],
+                response: "Course Level Duration:\n• Beginner Level: 3 months (12 weeks)\n• Intermediate Level: 4 months (16 weeks)\n• Advanced Level: 5 months (20 weeks)\n\nEach level includes:\n- Weekly lectures and tutorials\n- Practical sessions\n- Mid-level assessment\n- Final examination\n\nYou must pass each level before advancing to the next."
+            },
+
+            // RULE 14: Courses Under Various Faculties
+            facultyCourses: {
+                patterns: [
+                    /what courses (are )?(in|under) (the )?(faculty|department) of/i,
+                    /(list|tell me|show me) courses in (the )?faculty/i,
+                    /faculties and (their )?courses/i,
+                    /courses (offered|available) in (the )?faculty/i,
+                    /what (can|courses) (i study|are offered) in (the )?faculty/i
+                ],
+                response: "Courses by Faculty:\n\n📚 Faculty of Science:\n• Mathematics, Physics, Chemistry, Biology, Statistics\n\n🏛️ Faculty of Arts:\n• English, History, Philosophy, Languages, Theatre Arts\n\n💼 Faculty of Social Sciences:\n• Economics, Political Science, Sociology, Psychology, Mass Communication\n\n⚖️ Faculty of Law:\n• Common Law, Civil Law, International Law\n\n🏥 Faculty of Medicine:\n• Medicine & Surgery, Nursing, Anatomy, Physiology\n\n🔧 Faculty of Engineering:\n• Civil, Mechanical, Electrical, Chemical Engineering\n\n📊 Faculty of Management Sciences:\n• Accounting, Business Administration, Banking & Finance\n\n Faculty of Computing:\n• Computer Science, Cybersecurity, Data Science, Artificial Intelligence, Software Engineering"
+            },
+
+            // RULE 15: Current Vice Chancellor
+            viceChancellor: {
+                patterns: [
+                    /who (is|'s) the (current )?vice chancellor/i,
+                    /(current )?vice chancellor (of|at) delsu/i,
+                    /(tell me about|name of) (the )?vice chancellor/i,
+                    /vc of delsu/i
+                ],
+                response: "The current Vice Chancellor of Delta State University (DELSU) is Prof. Samuel Ogheneovo Asagba."
             }
         };
 
@@ -593,7 +653,11 @@
             admission: 'admission',      // If message contains "admission", use admission rule
             admissionStatus: 'offering',
             scholarship: 'scholarship',  // If message contains "scholarship", use scholarship rule
-            contact: 'contact'           // If message contains "contact", use contact rule
+            contact: 'contact',          // If message contains "contact", use contact rule
+            // NEW KEYWORDS ADDED
+            duration: 'courseDuration',  // If message contains "duration", use courseDuration rule
+            faculty: 'facultyCourses',   // If message contains "faculty", use facultyCourses rule
+            chancellor: 'viceChancellor' // If message contains "chancellor", use viceChancellor rule
         };
 
         // -------------------- PATTERN MATCHING FUNCTION --------------------
@@ -651,7 +715,7 @@
             // STEP 5: Default fallback - nothing matched
             // This is what happens when the bot doesn't understand
             return {
-                response: "I'm sorry, I don't understand that question. I can help you with:\n• Course information\n• Library rules and hours\n• Admission requirements\n• Scholarships and financial aid\n• Contact information\n• Academic calendar",
+                response: "I'm sorry, I don't understand that question. I can help you with:\n• Course information & duration\n• Library rules and hours\n• Admission requirements\n• Scholarships and financial aid\n• Contact information\n• Academic calendar\n• Faculty courses\n• Vice Chancellor info",
                 rule: 'fallback',
                 confidence: 'none'
             };
