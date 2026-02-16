@@ -1,0 +1,381 @@
+/* ============================================
+    CSS STYLES - Controls how the chatbot looks
+    ============================================ */
+
+/* Reset default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Main page styling with gradient background */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #e3ecf2;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+}
+
+/* Main chat container */
+.chat-container {
+    width: 100%;
+    max-width: 800px;
+    height: 100vh;
+    background: white;
+    border-radius: 0px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Header section at the top */
+.chat-header {
+    background:#667eea;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.chat-header h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.chat-header p {
+    font-size: 14px;
+    opacity: 1;
+}
+
+/* Control buttons (Debug and Reset) */
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 6px 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(246, 236, 236, 0.692);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Messages display area (scrollable) */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #44ace42f;
+}
+
+/* Individual message bubble */
+.message {
+    margin-bottom: 15px;
+    display: flex;
+    animation: fadeIn 0.3s;
+}
+
+/* Animation for new messages appearing */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* User messages align to the right */
+.message.user {
+    justify-content: flex-end;
+}
+
+/* Message bubble styling */
+.message-content {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    word-wrap: break-word;
+    white-space: pre-line;
+}
+
+/* Bot messages (white background) */
+.message.bot .message-content {
+    background: white;
+    color: #333;
+    border: 1px solid #e0e0e0;
+}
+
+/* User messages (blue background) */
+.message.user .message-content {
+    background: #667eea ;
+    color: white;
+}
+
+/* Debug information display */
+.debug-info {
+    font-size: 11px;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid #e0e0e0;
+    color: #666;
+}
+
+/* Example questions section */
+.example-questions {
+    padding: 10px 20px;
+    background: white;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* Individual example question button */
+.example-btn {
+    padding: 6px 12px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.example-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+/* Input area at the bottom */
+.chat-input {
+    padding: 15px;
+    background: white;
+    border-top: 2px solid #5a83ea94;
+    display: flex;
+    gap: 10px;
+}
+
+/* Text input field */
+.chat-input input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #5a83ea;
+    border-radius: 25px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.chat-input input:focus {
+    border-color: #667eea;
+}
+
+/* Send button */
+.send-btn {
+    padding: 12px 24px;
+    background: #5a83ea ;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.send-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Information bar at the very bottom */
+.info-bar {
+    padding: 10px 20px;
+    background: #fff3cd;
+    border-top: 1px solid #ffc107;
+    font-size: 13px;
+    color: #856404;
+    text-align: center;
+}
+
+/* ============================================
+    RESPONSIVE STYLES - MOBILE ADAPTATIONS
+    ============================================ */
+
+/* ADDED: Media query for mobile devices (screens smaller than 768px) */
+@media (max-width: 768px) {
+    /* Remove padding on body for full-width mobile view */
+    body {
+        padding: 0;
+    }
+
+    /* Make chat container take full screen on mobile */
+    .chat-container {
+        max-width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    /* Reduce header padding on mobile */
+    .chat-header {
+        padding: 15px 10px;
+    }
+
+    /* Smaller heading on mobile */
+    .chat-header h1 {
+        font-size: 20px;
+    }
+
+    /* Smaller subheading on mobile */
+    .chat-header p {
+        font-size: 12px;
+    }
+
+    /* Make control buttons smaller on mobile */
+    .btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    /* Reduce message area padding on mobile */
+    .chat-messages {
+        padding: 10px;
+    }
+
+    /* Allow messages to take more width on mobile */
+    .message-content {
+        max-width: 85%;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    /* Reduce example questions padding on mobile */
+    .example-questions {
+        padding: 8px 10px;
+        gap: 5px;
+    }
+
+    /* Make example buttons smaller and wrap better on mobile */
+    .example-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+        flex: 1 1 auto;
+    }
+
+    /* Reduce input area padding on mobile */
+    .chat-input {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    /* Smaller input text on mobile */
+    .chat-input input {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    /* Smaller send button on mobile */
+    .send-btn {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+
+    /* Smaller info bar text on mobile */
+    .info-bar {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    /* Make debug info smaller on mobile */
+    .debug-info {
+        font-size: 10px;
+    }
+}
+
+/* ADDED: Media query for very small mobile devices (screens smaller than 480px) */
+@media (max-width: 480px) {
+    /* Even smaller heading for very small screens */
+    .chat-header h1 {
+        font-size: 18px;
+    }
+
+    /* Stack control buttons vertically on very small screens if needed */
+    .controls {
+        gap: 5px;
+    }
+
+    /* Further reduce button size */
+    .btn {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    /* Messages take up even more width on very small screens */
+    .message-content {
+        max-width: 90%;
+        font-size: 13px;
+    }
+
+    /* Make example buttons full width on very small screens */
+    .example-btn {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    /* Reduce send button text on very small screens */
+    .send-btn {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+}
+
+/* ADDED: Media query for tablets (between 768px and 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    /* Slightly reduce container width on tablets */
+    .chat-container {
+        max-width: 700px;
+    }
+
+    /* Adjust message width for tablet screens */
+    .message-content {
+        max-width: 75%;
+    }
+}
+
+/* ADDED: Media query for landscape orientation on mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    /* Reduce header size in landscape mode */
+    .chat-header {
+        padding: 10px;
+    }
+
+    .chat-header h1 {
+        font-size: 18px;
+        margin-bottom: 2px;
+    }
+
+    .chat-header p {
+        font-size: 11px;
+    }
+
+    /* Hide or minimize info bar in landscape */
+    .info-bar {
+        padding: 5px 10px;
+        font-size: 10px;
+    }
+
+    /* Reduce message padding in landscape */
+    .chat-messages {
+        padding: 10px;
+    }
+}
