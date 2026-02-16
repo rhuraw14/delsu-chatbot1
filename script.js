@@ -233,7 +233,7 @@ const knowledgeBase = {
             /steps to get scholarship/i,
             /scholarship application form/i
         ],
-        response: "📋 HOW TO APPLY:\n• Maintain excellent academic performance (CGPA 3.5+)\n• Monitor scholarship announcements on notice boards\n• Check Student Affairs Office regularly\n• Visit: www.delsu.edu.ng/scholarships\n• Email: studentaffairs@delsu.edu.ng\n\n💡 TIPS:\n• Apply early when applications open\n• Keep academic records up to date\n• Prepare required documents in advance\n• Follow application instructions carefully."
+        response: "📋 HOW TO APPLY:\n• Maintain excellent academic performance (CGPA 3.5+)\n• Monitor scholarship announcements on notice boards\n• Check Student Affairs Office regularly\n• Visit: www.delsu.edu.ng\n\n💡 TIPS:\n• Apply early when applications open\n• Keep academic records up to date\n• Prepare required documents in advance\n• Follow application instructions carefully."
     },
 
     // RULE 19: General Admission Requirements (FALLBACK)
@@ -486,7 +486,7 @@ const knowledgeBase = {
             /delsu vc/i
         ],
         response: "The current Vice Chancellor of Delta State University (DELSU) is Prof. Samuel Ogheneovo Asagba."
-    }
+    },
 };
 
 // -------------------- GREETING RESPONSES --------------------
